@@ -22,3 +22,33 @@ jobs:
             linux/amd64
             linux/arm64
             linux/i386
+
+  build-psqldef:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/build
+        with:
+          repository: https://github.com/k0kubun/sqldef.git
+          imageName: psqldef
+          context: sqldef
+          dockerfile: sqldef/psqldef.Dockerfile
+          platforms: |
+            linux/amd64
+            linux/arm64
+            linux/i386
+
+  build-mssqldef:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/build
+        with:
+          repository: https://github.com/k0kubun/sqldef.git
+          imageName: mssqldef
+          context: sqldef
+          dockerfile: sqldef/mssqldef.Dockerfile
+          platforms: |
+            linux/amd64
+            linux/arm64
+            linux/i386

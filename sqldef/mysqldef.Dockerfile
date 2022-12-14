@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM golang:1.19.4-bullseye AS build
+FROM golang:1.19.4-bullseye AS build
 
 COPY ./source /app
 WORKDIR /app/cmd/mysqldef
