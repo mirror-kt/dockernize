@@ -9,6 +9,6 @@ RUN go build -o psqldef -tags netgo -installsuffix netgo -ldflags "-w -s -X main
 
 FROM scratch
 
-COPY --from=build /app/cmd/psqldef/psqldef /app
+COPY --from=build /app/cmd/psqldef/psqldef /app/
 
 CMD [ "/app/psqldef" ]
