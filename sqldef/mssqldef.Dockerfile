@@ -9,6 +9,6 @@ RUN go build -o mssqldef -tags netgo -installsuffix netgo -ldflags "-w -s -X mai
 
 FROM scratch
 
-COPY --from=build /app/cmd/mssqldef/mssqldef /app
+COPY --from=build /app/cmd/mssqldef/mssqldef /app/
 
 CMD [ "/app/mssqldef" ]

@@ -9,6 +9,6 @@ RUN go build -o mysqldef -tags netgo -installsuffix netgo -ldflags "-w -s -X mai
 
 FROM scratch
 
-COPY --from=build /app/cmd/mysqldef/mysqldef /app
+COPY --from=build /app/cmd/mysqldef/mysqldef /app/
 
 CMD [ "/app/mysqldef" ]
