@@ -32,20 +32,14 @@ runs:
       shell: bash
       run: |
         cd "${{ inputs.context }}/source"
-        if [ "${INPUT_SEMVER_ONLY}" = 'false' ]; then
-        # Get a actual latest tag.
-        # If no tags found, supress an error. In such case stderr will be not stored in latest_tag variable so no additional logic is needed.
-          latest_tag=$(git describe --abbrev=0 --tags || true)
-        else
-          # Get a latest tag in the shape of semver.
-          for ref in $(git for-each-ref --sort=-creatordate --format '%(refname)' refs/tags); do
-            tag="${ref#refs/tags/}"
-            if echo "${tag}" | grep -Eq '^v?([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$'; then
-              latest_tag="${tag}"
-              break
-            fi
-          done
-        fi
+        # Get a latest tag in the shape of semver.
+        for ref in $(git for-each-ref --sort=-creatordate --format '%(refname)' refs/tags); do
+          tag="${ref#refs/tags/}"
+          if echo "${tag}" | grep -Eq '^v?([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$'; then
+            latest_tag="${tag}"
+            break
+          fi
+        done
         echo "latest_tag=v${latest_tag#v}" >> $GITHUB_OUTPUT
         echo "latest_tag_commit=$(git rev-parse --short $latest_tag)" >> $GITHUB_OUTPUT
         cd $GITHUB_WORKSPACE
@@ -54,6 +48,7 @@ runs:
       run: |
         echo $LATEST_IMAGE_VERSION
         echo $LATEST_TAG_VERSION
+        echo ${{ inputs.context }}/source
       env:
         LATEST_IMAGE_VERSION: ${{ steps.get-latest-image.outputs.latest_image_version }}
         LATEST_TAG_VERSION: ${{ steps.get-latest-tag.outputs.latest_tag }}
