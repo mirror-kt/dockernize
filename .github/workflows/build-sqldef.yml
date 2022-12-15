@@ -7,6 +7,10 @@ on:
   schedule:
     - cron: "26 * * * *"
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-mysqldef:
     runs-on: ubuntu-latest
