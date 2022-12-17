@@ -11,4 +11,4 @@ FROM scratch
 
 COPY --from=build /app/cmd/mssqldef/mssqldef /app/
 
-CMD [ "/app/mssqldef" ]
+ENTRYPOINT [ "/app/mssqldef" ]
