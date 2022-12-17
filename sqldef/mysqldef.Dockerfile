@@ -11,4 +11,4 @@ FROM scratch
 
 COPY --from=build /app/cmd/mysqldef/mysqldef /app/
 
-CMD [ "/app/mysqldef" ]
+ENTRYPOINT [ "/app/mysqldef" ]

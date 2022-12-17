@@ -11,4 +11,4 @@ FROM scratch
 
 COPY --from=build /app/cmd/psqldef/psqldef /app/
 
-CMD [ "/app/psqldef" ]
+ENTRYPOINT [ "/app/psqldef" ]
