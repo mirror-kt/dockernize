@@ -5,7 +5,7 @@ WORKDIR /app/cmd/mssqldef
 
 ARG VERSION
 
-RUN go build -o mssqldef -tags netgo -installsuffix netgo -ldflags "-w -s -X main.version=${VERSION} -linkmode external -extldflags -static"
+RUN go build -o mssqldef -tags netgo -installsuffix netgo -ldflags "-w -s -X main.version=${VERSION}"
 
 FROM scratch
 

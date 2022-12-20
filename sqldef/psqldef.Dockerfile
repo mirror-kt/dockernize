@@ -5,8 +5,7 @@ WORKDIR /app/cmd/psqldef
 
 ARG VERSION
 
-RUN go build -o psqldef -tags netgo -installsuffix netgo -ldflags "-w -s -X main.version=${VERSION}"
-RUN ls -al /app/cmd/psqldef
+RUN go build -o psqldef -tags netgo -installsuffix netgo -ldflags "-w -s -X main.version=${VERSION} -linkmode external -extldflags -static"
 
 FROM scratch
 
