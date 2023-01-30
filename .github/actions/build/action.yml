@@ -84,7 +84,7 @@ runs:
       with:
         sarif_file: "trivy-results.sarif"
 
-    - uses: docker/build-push-action@v3
+    - uses: docker/build-push-action@v4
       if: ${{ steps.get-latest-image.outputs.latest_image_version }} != ${{ steps.get-latest-tag.outputs.latest_tag }}
       with:
         context: ${{ inputs.context }}
