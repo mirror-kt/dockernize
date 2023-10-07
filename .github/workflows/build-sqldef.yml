@@ -15,7 +15,7 @@ jobs:
   build-mysqldef:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/build
         with:
           repository: https://github.com/k0kubun/sqldef.git
@@ -30,7 +30,7 @@ jobs:
   build-psqldef:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/build
         with:
           repository: https://github.com/k0kubun/sqldef.git
@@ -45,7 +45,7 @@ jobs:
   build-mssqldef:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/build
         with:
           repository: https://github.com/k0kubun/sqldef.git
