@@ -59,7 +59,7 @@ runs:
         cd "${{ inputs.context }}/source"
         git checkout -b ${{ steps.get-latest-tag.outputs.latest_tag }}
         cd $GITHUB_WORKSPACE
-    - uses: docker/setup-qemu-action@v2
+    - uses: docker/setup-qemu-action@v3
       if: ${{ steps.get-latest-image.outputs.latest_image_version }} != ${{ steps.get-latest-tag.outputs.latest_tag }}
     - uses: docker/setup-buildx-action@v3
       if: ${{ steps.get-latest-image.outputs.latest_image_version }} != ${{ steps.get-latest-tag.outputs.latest_tag }}
