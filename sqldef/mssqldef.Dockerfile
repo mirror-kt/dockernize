@@ -1,4 +1,4 @@
-FROM golang:1.21.2-bullseye AS build
+FROM golang:1.21.3-bullseye AS build
 
 COPY ./source /app
 WORKDIR /app/cmd/mssqldef
