@@ -72,7 +72,7 @@ runs:
 
     - shell: bash
       run: docker build -t ${{ inputs.imageName }}:${{ steps.get-latest-tag.outputs.latest_tag_commit }} ${{ inputs.context }} -f ${{ inputs.dockerfile }}
-    - uses: aquasecurity/trivy-action@0.12.0
+    - uses: aquasecurity/trivy-action@0.20.0
       with:
         image-ref: ${{ inputs.imageName }}:${{ steps.get-latest-tag.outputs.latest_tag_commit }}
         format: "sarif"
