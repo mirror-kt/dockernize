@@ -5,54 +5,50 @@ on:
     branches:
       - "main"
   schedule:
-    - cron: "26 * * * *"
+    - cron: "26 0 * * *"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  build-mysqldef:
+  build:
+    name: ${{ matrix.images.imageName }}
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/build
-        with:
-          repository: https://github.com/k0kubun/sqldef.git
-          imageName: mysqldef
-          context: sqldef
-          dockerfile: sqldef/mysqldef.Dockerfile
-          platforms: |
-            linux/amd64
-            linux/arm64
-            linux/i386
+    strategy:
+      matrix:
+        images:
+          - repository: https://github.com/k0kubun/sqldef.git
+            imageName: mysqldef
+            context: sqldef
+            dockerfile: sqldef/mysqldef.Dockerfile
+            platforms: |
+              linux/amd64
+              linux/arm64
+              linux/i386
+          - repository: https://github.com/k0kubun/sqldef.git
+            imageName: psqldef
+            context: sqldef
+            dockerfile: sqldef/psqldef.Dockerfile
+            platforms: |
+              linux/amd64
+              linux/arm64
+              linux/i386
+          - repository: https://github.com/k0kubun/sqldef.git
+            imageName: mssqldef
+            context: sqldef
+            dockerfile: sqldef/mssqldef.Dockerfile
+            platforms: |
+              linux/amd64
+              linux/arm64
+              linux/i386
 
-  build-psqldef:
-    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/build
         with:
-          repository: https://github.com/k0kubun/sqldef.git
-          imageName: psqldef
-          context: sqldef
-          dockerfile: sqldef/psqldef.Dockerfile
-          platforms: |
-            linux/amd64
-            linux/arm64
-            linux/i386
-
-  build-mssqldef:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/build
-        with:
-          repository: https://github.com/k0kubun/sqldef.git
-          imageName: mssqldef
-          context: sqldef
-          dockerfile: sqldef/mssqldef.Dockerfile
-          platforms: |
-            linux/amd64
-            linux/arm64
-            linux/i386
+          repository: ${{ matrix.images.repository }}
+          imageName: ${{ matrix.images.imageName }}
+          context: ${{ matrix.images.context }}
+          dockerfile: ${{ matrix.images.dockerfile || 'Dockerfile' }}
+          platforms: ${{ matrix.images.platforms }}

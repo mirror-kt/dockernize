@@ -20,10 +20,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Get latest image version
-      id: get-latest-image
-      shell: bash
-      run: echo "latest_image_version=$(docker run --rm quay.io/skopeo/stable:latest list-tags docker://ghcr.io/mirror-kt/${{ inputs.imageName }} | jq -r '.Tags | sort | last')" >> $GITHUB_OUTPUT
     - name: Checkout source repository
       shell: bash
       run: git clone --depth=1 ${{ inputs.repository }} "${{ inputs.context }}/source"
@@ -32,70 +28,45 @@ runs:
       shell: bash
       run: |
         cd "${{ inputs.context }}/source"
+        git fetch --tags
         # Get a latest tag in the shape of semver.
-        for ref in $(git for-each-ref --sort=-creatordate --format '%(refname)' refs/tags); do
-          tag="${ref#refs/tags/}"
-          if echo "${tag}" | grep -Eq '^v?([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$'; then
-            latest_tag="${tag}"
-            break
-          fi
-        done
-        echo "latest_tag=v${latest_tag#v}" >> $GITHUB_OUTPUT
-        echo "latest_tag_commit=$(git rev-parse --short $latest_tag)" >> $GITHUB_OUTPUT
+        latest_tag=$(git for-each-ref --sort=-creatordate --format '%(refname)' refs/tags \
+          | sed -E 's/refs\/tags\/(v?[0-9]+.[0-9]+.[0-9]+)/\1/' \
+          | head -1)
+        echo "latest_tag=${latest_tag}" >> $GITHUB_OUTPUT
+        echo "latest_tag_without_v_prefix=${latest_tag#v}" >> $GITHUB_OUTPUT
         cd $GITHUB_WORKSPACE
     - name: Debug
       shell: bash
       run: |
-        echo $LATEST_IMAGE_VERSION
         echo $LATEST_TAG_VERSION
         echo ${{ inputs.context }}/source
       env:
-        LATEST_IMAGE_VERSION: ${{ steps.get-latest-image.outputs.latest_image_version }}
         LATEST_TAG_VERSION: ${{ steps.get-latest-tag.outputs.latest_tag }}
     - name: Checkout the tag in source repository
-      if: ${{ steps.get-latest-image.outputs.latest_image_version }} != ${{ steps.get-latest-tag.outputs.latest_tag }}
       shell: bash
       run: |
         cd "${{ inputs.context }}/source"
         git checkout -b ${{ steps.get-latest-tag.outputs.latest_tag }}
         cd $GITHUB_WORKSPACE
     - uses: docker/setup-qemu-action@v3
-      if: ${{ steps.get-latest-image.outputs.latest_image_version }} != ${{ steps.get-latest-tag.outputs.latest_tag }}
     - uses: docker/setup-buildx-action@v3
-      if: ${{ steps.get-latest-image.outputs.latest_image_version }} != ${{ steps.get-latest-tag.outputs.latest_tag }}
     - uses: docker/login-action@v3
-      if: ${{ steps.get-latest-image.outputs.latest_image_version }} != ${{ steps.get-latest-tag.outputs.latest_tag }}
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
         password: ${{ github.token }}
-
-    - shell: bash
-      run: docker build -t ${{ inputs.imageName }}:${{ steps.get-latest-tag.outputs.latest_tag_commit }} ${{ inputs.context }} -f ${{ inputs.dockerfile }}
-    - uses: aquasecurity/trivy-action@0.20.0
-      with:
-        image-ref: ${{ inputs.imageName }}:${{ steps.get-latest-tag.outputs.latest_tag_commit }}
-        format: "sarif"
-        security-checks: vuln
-        output: "trivy-results.sarif"
-    - name: Upload Trivy scan results to GitHub Security
-      uses: github/codeql-action/upload-sarif@v3
-      if: always()
-      with:
-        sarif_file: "trivy-results.sarif"
-
     - uses: docker/build-push-action@v5
-      if: ${{ steps.get-latest-image.outputs.latest_image_version }} != ${{ steps.get-latest-tag.outputs.latest_tag }}
       with:
         context: ${{ inputs.context }}
         file: ${{ inputs.dockerfile }}
         push: true
         labels: |
           org.opencontainers.image.source = https://github.com/${{ github.repository }}
-          org.opencontainers.image.revision = ${{ steps.get-latest-tag.outputs.latest_tag_commit }}
+          org.opencontainers.image.version = ${{ steps.get-latest-tag.outputs.latest_tag_without_v_prefix }}
         tags: |
-          ghcr.io/mirror-kt/${{ inputs.imageName }}:${{ steps.get-latest-tag.outputs.latest_tag }}
-          ghcr.io/mirror-kt/${{ inputs.imageName }}:${{ steps.get-latest-tag.outputs.latest_tag_commit }}
+          ghcr.io/mirror-kt/${{ inputs.imageName }}:${{ steps.get-latest-tag.outputs.latest_tag_without_v_prefix }}
           ghcr.io/mirror-kt/${{ inputs.imageName }}:latest
         platforms: ${{ inputs.platforms }}
-        build-args: VERSION = ${{ steps.get-latest-tag.outputs.latest_tag }}
+        build-args: |
+          VERSION=${{ steps.get-latest-tag.outputs.latest_tag }}
