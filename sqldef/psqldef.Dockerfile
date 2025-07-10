@@ -1,4 +1,4 @@
-FROM golang:1.22.3-bullseye AS build
+FROM golang:1.24.5-bullseye AS build
 
 COPY ./source /app
 WORKDIR /app/cmd/psqldef
