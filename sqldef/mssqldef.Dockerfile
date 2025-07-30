@@ -7,7 +7,7 @@ ARG VERSION
 
 RUN go build -o mssqldef -tags netgo -installsuffix netgo -ldflags "-w -s -X main.version=${VERSION}"
 
-FROM scratch
+FROM gcr.io/distroless/static-debian12:debug-nonroot
 
 COPY --from=build /app/cmd/mssqldef/mssqldef /app/
 
