@@ -25,7 +25,6 @@ jobs:
             platforms: |
               linux/amd64
               linux/arm64
-              linux/i386
           - repository: https://github.com/k0kubun/sqldef.git
             imageName: psqldef
             context: sqldef
@@ -33,7 +32,6 @@ jobs:
             platforms: |
               linux/amd64
               linux/arm64
-              linux/i386
           - repository: https://github.com/k0kubun/sqldef.git
             imageName: mssqldef
             context: sqldef
@@ -41,7 +39,6 @@ jobs:
             platforms: |
               linux/amd64
               linux/arm64
-              linux/i386
 
     steps:
       - uses: actions/checkout@v4
