@@ -12,4 +12,4 @@ FROM gcr.io/distroless/static-debian12:debug-nonroot
 COPY --from=build /app/cmd/mssqldef/mssqldef /app/
 
 
-ENTRYPOINT [ "/app/mssqldef" ]
+ENTRYPOINT [ "sh", "-c", "/app/mssqldef" ]

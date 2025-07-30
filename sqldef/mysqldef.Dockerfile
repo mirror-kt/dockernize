@@ -11,4 +11,4 @@ FROM gcr.io/distroless/static-debian12:debug-nonroot
 
 COPY --from=build /app/cmd/mysqldef/mysqldef /app/
 
-ENTRYPOINT [ "/app/mysqldef" ]
+ENTRYPOINT [ "sh", "-c", "/app/mysqldef" ]

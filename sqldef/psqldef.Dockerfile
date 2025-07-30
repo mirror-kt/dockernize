@@ -11,4 +11,4 @@ FROM gcr.io/distroless/static-debian12:debug-nonroot
 
 COPY --from=build /app/cmd/psqldef/psqldef /app/
 
-ENTRYPOINT [ "/app/psqldef" ]
+ENTRYPOINT [ "sh", "-c", "/app/psqldef" ]
