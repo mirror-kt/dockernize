@@ -1,4 +1,4 @@
-FROM golang:1.24.5-bullseye AS build
+FROM golang:1.24.6-bullseye AS build
 
 COPY ./source /app
 WORKDIR /app/cmd/mysqldef
